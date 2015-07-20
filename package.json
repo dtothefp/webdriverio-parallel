@@ -1,0 +1,46 @@
+{
+  "name": "webdriverio-parallel-example",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "devDependencies": {
+    "babel": "^5.6.14",
+    "babel-core": "^5.6.15",
+    "babel-eslint": "^3.1.20",
+    "babel-loader": "^5.2.2",
+    "babel-runtime": "^5.6.15",
+    "browserstacktunnel-wrapper": "^1.4.0",
+    "chai": "^3.0.0",
+    "chai-as-promised": "^5.1.0",
+    "eslint": "^0.24.0",
+    "eslint-friendly-formatter": "^1.0.8",
+    "eslint-loader": "^0.14.1",
+    "exports-loader": "^0.6.2",
+    "gulp": "^3.9.0",
+    "gulp-connect": "^2.2.0",
+    "gulp-data": "^1.2.0",
+    "gulp-eslint": "^0.14.0",
+    "gulp-exit": "0.0.2",
+    "gulp-load-plugins": "^1.0.0-rc.1",
+    "gulp-mocha": "^2.1.2",
+    "gulp-open": "^0.3.2",
+    "gulp-swig": "^0.7.4",
+    "gulp-util": "^3.0.6",
+    "imports-loader": "^0.6.4",
+    "json-loader": "^0.5.2",
+    "lodash": "^3.10.0",
+    "run-sequence": "^1.1.1",
+    "selenium-standalone": "^4.4.3",
+    "webdriverio": "^3.0.4",
+    "webpack": "^1.10.0",
+    "webpack-dev-server": "^1.10.1",
+    "yargs": "^3.14.0"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "isomorphic-fetch": "^2.1.1"
+  }
+}
