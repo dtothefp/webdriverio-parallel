@@ -24,7 +24,9 @@ gulp -e prod // runs prod build => uglifies JS
 #### Gulp Tasks
 ```shell
 gulp selenium // run e2e tests from local selenium server => must have local server running
+gulp selenium:parallel // run e2e tests from local selenium server => must have local server running
 gulp selenium:tunnel // run e2e tests from BrowserStack selenium server using local IP => must have local server running
+gulp selenium:tunnel:parallel // run e2e tests from BrowserStack selenium server using local IP => must have local server running
 gulp selenium -e prod // run e2e tests from BrowserStack selenium server using hosted IP
 ```
 
@@ -37,10 +39,34 @@ gulp selenium -e prod // run e2e tests from BrowserStack selenium server using h
 https://github.com/browserstack/automate-node-samples/blob/master/LocalSample.js
 https://github.com/webdriverio/webdriverio/issues/551
 
-## Testing Philosophies
-![](https://www-static2.strongloop.com/wp-content/uploads/2015/03/975x703xpyramid.png.pagespeed.ic.Ozn480glOj.png)
+#### Parallel Config Output:
 
-#### TODO:
-- add task strictly for opening BrowserStack tunnel for Live viewing
-- add environmental specific eslint rules
-- probably lots of other stuff
+```js
+{
+  specs: [ 'test/e2e/wdio*.js' ],
+  capabilities:
+   [ { browserName: 'firefox',
+     'browserstack.local': 'true',
+     'browserstack.debug': 'true' },
+  { browserName: 'ie',
+   'browserstack.local': 'true',
+   'browserstack.debug': 'true' },
+  { browserName: 'chrome',
+   'browserstack.local': 'true',
+   'browserstack.debug': 'true' } ],
+  logLevel: 'silent',
+  coloredLogs: true,
+  baseUrl: 'http://localhost:3000',
+  waitforTimeout: 10000,
+  framework: 'mocha',
+  reporter: 'spec',
+  reporterOptions: { outputDir: './' },
+  mochaOpts: { ui: 'bdd' },
+  onPrepare: [Function],
+  onComplete: [Function],
+  host: 'hub.browserstack.com',
+  port: 80,
+  user: process.env.BROWSERSTACK_USERNAME,
+  key:  process.env.BROWSERSTACK_API
+}
+```

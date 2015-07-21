@@ -5,8 +5,11 @@ import tasks, {ENV, plugins as $} from './gulp/config/gulpfile-utils';
 var isDev = ENV === 'DEV';
 
 gulp.task('webpack', tasks.webpack);
+gulp.task('browser-sync', ['build'], tasks.browserSync);
 gulp.task('selenium', tasks.selenium);
 gulp.task('selenium:tunnel', tasks.selenium);
+gulp.task('selenium:tunnel:parallel', tasks.selenium);
+gulp.task('selenium:parallel', tasks.selenium);
 gulp.task('selenium:tunnel:live', tasks.selenium);
 gulp.task('lint', tasks.eslint);
 gulp.task('connect', tasks.connect);
@@ -15,18 +18,11 @@ gulp.task('open', tasks.open);
 
 gulp.task('build', ['lint', 'webpack', 'template']);
 
-gulp.task('default', (cb) => {
-  $.sequence(
-    'build',
-    'connect',
-    'open',
-    cb
-  );
-});
+gulp.task('default', ['browser-sync']);
 
 gulp.task('test', (cb) => {
   $.sequence(
-    'connect',
+    'browser-sync',
     'selenium',
     cb
   );

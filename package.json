@@ -41,6 +41,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "isomorphic-fetch": "^2.1.1"
+    "browser-sync": "^2.8.0",
+    "isomorphic-fetch": "^2.1.1",
+    "mocha": "^2.2.5"
   }
 }

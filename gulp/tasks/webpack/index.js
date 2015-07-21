@@ -5,8 +5,7 @@ import WebpackDevServer from 'webpack-dev-server';
 import makeConfig from './make-config';
 
 export default function(gulp, plugins, config) {
-  const port = 3001;
-  var {ENV} = config;
+  var {ENV, port} = config;
   var {gutil} = plugins;
   const isDev = ENV === 'DEV';
   let {PluginError} = gutil;
@@ -65,6 +64,12 @@ export default function(gulp, plugins, config) {
         hot: true,
         quiet: true,
         noInfo: true,
+        proxy: [
+          {
+            path: /^(?!\/js\/(main))(.*)$/,
+            target: 'localhost:3000'
+          }
+        ],
         watchOptions: {
           aggregateTimeout: 300,
           poll: 1000

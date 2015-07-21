@@ -4,13 +4,15 @@ import _, {merge} from 'lodash';
 import BrowserStackTunnel from 'browserstacktunnel-wrapper';
 import selenium from 'selenium-standalone';
 import install from './install';
+import spawn from './spawn-process';
 
 export default function(gulp, plugins, config) {
   const babelPath = join(process.cwd(), 'gulp/config/babelhook');
   const SELENIUM_VERSION = '2.46.0';
   var {mocha, gutil} = plugins;
   var {PluginError} = gutil;
-  var {ENV, file, port, isWatch} = config;
+  var {ENV, file, isWatch} = config;
+  var port = 3000;
   file = file || '**/*-spec';
   var isDev = ENV === 'DEV';
   var src =  join(process.cwd(), 'test/e2e/', `${file}.js`);
@@ -27,9 +29,13 @@ export default function(gulp, plugins, config) {
     .once('end', cb);
   }
 
-  function runWebdriver (opts) {
-    global.browser = webdriverio.remote(opts);
-    gutil.log(gutil.colors.magenta(`Starting Tests at Base URL of ${opts.baseUrl}`));
+  function runWebdriver (opts, task, isTunnel) {
+    if(task === 'parallel') {
+      return spawn(isTunnel);
+    } else {
+      global.browser = webdriverio.remote(opts);
+      gutil.log(gutil.colors.magenta(`Starting Tests at Base URL of ${opts.baseUrl}`));
+    }
   }
 
   function killTunnel(instance, cb) {
@@ -66,14 +72,23 @@ export default function(gulp, plugins, config) {
     desiredCapabilities: {
       browserName: 'chrome'
     },
-    baseUrl: `http://site.local.thegroundwork.com:${port}`
+    baseUrl: `localhost:${port}`
   };
 
   return (cb) => {
     //switch the params is the test is not bound
-    let testType = gulp.currentTask.name.split(':').splice(-1)[0];
+    let split = gulp.currentTask.name.split(':');
+    let task = split.splice(-1)[0];
+    let wdioCli = false;
 
-    if(testType === 'tunnel' && isDev) {
+    if(task === 'parallel') {
+      wdioCli = true;
+      if(split[1] === 'tunnel') {
+        task = 'tunnel';
+      }
+    }
+
+    if(task === 'tunnel' && isDev) {
       /**
        * gulp selenium:tunnel
        * Start a Browserstack tunnel to allow using local IP's for
@@ -81,13 +96,13 @@ export default function(gulp, plugins, config) {
        */
       process.env.isTunnel = true;
       merge(options, tunnelConfig);
-      runWebdriver(options);
+      runWebdriver(options, task);
 
       let browserStackTunnel = new BrowserStackTunnel({
         key: process.env.BROWSERSTACK_API,
         hosts: [{
-          name: 'site.local.thegroundwork.com',
-          port: 8000,
+          name: 'localhost',
+          port: 3000,
           sslFlag: 0
         }],
         v: true,
@@ -104,16 +119,26 @@ export default function(gulp, plugins, config) {
         if (error) {
           gutil.log('[tunnel start]', error);
         } else {
-          if(testType !== 'live') {
-            runMocha((param) => {
-              killTunnel(browserStackTunnel, () => {
-                if(param && param.message) {
-                  gutil.log(`Mocha e2e Error: ${param.message}`);
-                }
-                process.exit();
-                cb();
+          if(task !== 'live') {
+            if(wdioCli) {
+              let cp = runWebdriver(options, 'parallel', true);
+
+              cp.on('close', (code) => {
+                `Child process closed status: ${code}`;
+                child.kill();
+                process.exit(code);
               });
-            });
+            } else {
+              runMocha((param) => {
+                killTunnel(browserStackTunnel, () => {
+                  if(param && param.message) {
+                    gutil.log(`Mocha e2e Error: ${param.message}`);
+                  }
+                  process.exit();
+                  cb();
+                });
+              });
+            }
           } else {
             gutil.log('Visit BrowserStack Live to QA: https://www.browserstack.com/start');
           }
@@ -136,20 +161,32 @@ export default function(gulp, plugins, config) {
             });
           }
 
-          runWebdriver(options);
-          runMocha((param) => {
-            if(param && param.message) {
-              gutil.log(`Mocha e2e Error: ${param.message}`);
-            }
-            child.kill();
-            cb();
-          });
+          let cp = runWebdriver(options, task);
 
+          if(!wdioCli) {
+            runMocha((param) => {
+              if(param && param.message) {
+                gutil.log(`Mocha e2e Error: ${param.message}`);
+              }
+              if(typeof cb === 'function') {
+                let gulpCb = cb;
+                cb = null;
+                child.kill();
+                gulpCb();
+              }
+            });
+          } else {
+            cp.on('close', (code) => {
+              `Child process closed status: ${code}`;
+              child.kill();
+              process.exit(code);
+            });
+          }
         });
       });
     } else {
       merge(options, remoteConfig);
-      runWebdriver(options);
+      runWebdriver(options, task);
       runMocha(cb);
     }
   };

@@ -14,6 +14,11 @@ export default function(opts) {
       'fetch': 'imports?this=>global!exports?global.fetch!isomorphic-fetch',
       'window.fetch': 'imports?this=>global!exports?global.fetch!isomorphic-fetch',
       'global.fetch': 'imports?this=>global!exports?global.fetch!isomorphic-fetch'
+    }),
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: process.env.NODE_ENV
+      }
     })
   ];
 
@@ -23,11 +28,6 @@ export default function(opts) {
   ];
 
   var prodPlugins = [
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: JSON.stringify('production')
-      }
-    })
   ];
 
   var devEntry = [
@@ -63,7 +63,7 @@ export default function(opts) {
     entry:  src,
     output: {
       path: join(process.cwd(), 'dist'),
-      publicPath: '/',
+      publicPath: '/js/',
       filename: '[name].js'
     },
     eslint: {
@@ -91,12 +91,13 @@ export default function(opts) {
     return configArr.push.apply(configArr, add);
   };
 
-  if(isDev && !isTest) {
+  if(isDev) {
     concatArr(config.entry, devEntry);
     config.devtool = 'eval';
     concatArr(config.plugins, devPlugins);
   } else {
     concatArr(config.plugins, prodPlugins);
+    config.devtool = '#inline-source-map';
   }
 
   return config;
