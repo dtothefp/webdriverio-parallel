@@ -29,9 +29,12 @@ export default function(gulp, plugins, config) {
     .once('end', cb);
   }
 
-  function runWebdriver (opts, task, isTunnel) {
+  function runWebdriver (opts, task, env) {
     if(task === 'parallel') {
-      return spawn(isTunnel);
+      let opts = {};
+      opts[env] = true;
+      gutil.log(gutil.colors.magenta(`Starting Parallel Tests for ${env}`));
+      return spawn(opts);
     } else {
       global.browser = webdriverio.remote(opts);
       gutil.log(gutil.colors.magenta(`Starting Tests at Base URL of ${opts.baseUrl}`));
@@ -100,11 +103,18 @@ export default function(gulp, plugins, config) {
 
       let browserStackTunnel = new BrowserStackTunnel({
         key: process.env.BROWSERSTACK_API,
-        hosts: [{
-          name: 'localhost',
-          port: 3000,
-          sslFlag: 0
-        }],
+        hosts: [
+          {
+            name: 'localhost',
+            port: 3000,
+            sslFlag: 0
+          },
+          {
+            name: 'localhost',
+            port: 8080,
+            sslFlag: 0
+          }
+        ],
         v: true,
         //important to omit identifier
         //localIdentifier: 'my_tunnel', // optionally set the -localIdentifier option
@@ -121,7 +131,7 @@ export default function(gulp, plugins, config) {
         } else {
           if(task !== 'live') {
             if(wdioCli) {
-              let cp = runWebdriver(options, 'parallel', true);
+              let cp = runWebdriver(options, 'parallel', 'tunnel');
 
               cp.on('close', (code) => {
                 `Child process closed status: ${code}`;
@@ -186,8 +196,15 @@ export default function(gulp, plugins, config) {
       });
     } else {
       merge(options, remoteConfig);
-      runWebdriver(options, task);
-      runMocha(cb);
+      let cp = runWebdriver(options, task, 'remote');
+      if(!wdioCli) {
+        runMocha(cb);
+      } else {
+        cp.on('close', (code) => {
+          `Child process closed status: ${code}`;
+          cb();
+        });
+      }
     }
   };
 }
