@@ -19,9 +19,9 @@ var config = {
     capabilities: [{
       browserName: 'firefox'
     },
-    {
-      browserName: 'ie'
-    },
+    //{
+      //browserName: 'ie'
+    //},
     {
       browserName: 'chrome'
     }],
@@ -48,10 +48,10 @@ var config = {
      * hooks
      */
     onPrepare: function() {
-        console.log('let\'s go');
+        console.log('WDIO CLI test runner starting');
     },
     onComplete: function() {
-        console.log('that\'s it');
+        console.log('WDIO CLI test runner finished');
     }
 
 };
