@@ -28,6 +28,7 @@ gulp selenium:parallel // run e2e tests from local selenium server => must have 
 gulp selenium:tunnel // run e2e tests from BrowserStack selenium server using local IP => must have local server running
 gulp selenium:tunnel:parallel // run e2e tests from BrowserStack selenium server using local IP => must have local server running
 gulp selenium -e prod // run e2e tests from BrowserStack selenium server using hosted IP
+gulp selenium:parallel -e prod // run e2e tests from BrowserStack selenium server using hosted IP
 ```
 
 #### Cool Stuff
