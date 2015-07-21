@@ -69,10 +69,6 @@ var remoteConfig = {
   logLevel: 'silent'
 };
 
-function addBs() {
-}
-
-
 if(process.env.TUNNEL) {
   config.capabilities.push({
     browserName: 'ie'

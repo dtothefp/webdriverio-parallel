@@ -61,7 +61,7 @@ export default function(opts) {
   var loaders = [
     {
       test: /\.js?$/,
-      exclude: /node_modules/,
+      exclude: /node_modules(?!\/isomorphic-fetch\/node_modules)(?!\/whatwg-fetch).*/,
       loader: 'babel?optional[]=runtime'
     },
     {

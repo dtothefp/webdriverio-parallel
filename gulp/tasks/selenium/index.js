@@ -65,7 +65,7 @@ export default function(gulp, plugins, config) {
   const remoteConfig = {
     host: 'hub.browserstack.com',
     port: 80,
-    baseUrl: 'http://hrc.dev.thegroundwork.com',
+    baseUrl: 'https://dtothefp.github.io/webdriverio-parallel',
     user : process.env.BROWSERSTACK_USERNAME,
     key: process.env.BROWSERSTACK_API,
     logLevel: 'silent'
@@ -91,7 +91,7 @@ export default function(gulp, plugins, config) {
       }
     }
 
-    if(task === 'tunnel' && isDev) {
+    if((task === 'tunnel' || task === 'live') && isDev) {
       /**
        * gulp selenium:tunnel
        * Start a Browserstack tunnel to allow using local IP's for
