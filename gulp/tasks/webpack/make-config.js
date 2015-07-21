@@ -28,6 +28,17 @@ export default function(opts) {
   ];
 
   var prodPlugins = [
+    new webpack.optimize.DedupePlugin(),
+    new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.optimize.AggressiveMergingPlugin(),
+    new webpack.optimize.UglifyJsPlugin({
+      output: {
+        comments: false
+      },
+      compress: {
+        warnings: false
+      }
+    })
   ];
 
   var devEntry = [
@@ -62,7 +73,7 @@ export default function(opts) {
   var config = {
     entry:  src,
     output: {
-      path: join(process.cwd(), 'dist'),
+      path: join(process.cwd(), 'dist/js'),
       publicPath: '/js/',
       filename: '[name].js'
     },

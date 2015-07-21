@@ -1,7 +1,7 @@
 export default function(gulp, plugins, config) {
   var {ENV, isTest} = config;
   var {data, swig} = plugins;
-  var isDev = ENV === 'DEV' && !isTest;
+  var isDev = ENV === 'DEV';
 
   return () => {
     return gulp.src('./src/**/*.html')
