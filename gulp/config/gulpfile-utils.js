@@ -58,6 +58,7 @@ const plugins = pluginFn({
   ],
   rename: {
     'gulp-util': 'gutil',
+    'gulp-if': 'gulpIf',
     'run-sequence': 'sequence'
   }
 });
