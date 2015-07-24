@@ -1,4 +1,5 @@
 import fetch from 'fetch';
+console.log('Something');
 
 fetch('http://www.omdbapi.com/?t=up&y=&plot=short&r=json')
   .then(function(res) {

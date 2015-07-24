@@ -24,7 +24,7 @@ describe('local homepage parallel', function() {
       return client.getText('#viewport').then((text) => {
         return text === 'Up';
       });
-    }).should.eventually.be.true;
+    }, 5000).should.eventually.be.true;
   });
 
   after(function() {
